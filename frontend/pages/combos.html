@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combos — Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <style>
+        .combo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.4rem;
+            transition: transform .2s, border-color .2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .combo-card:hover { transform: translateY(-2px); border-color: rgba(255,45,120,.3); }
+        .combo-card::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+        .combo-card.ATIVO::after    { background: var(--accent); }
+        .combo-card.APROVADO::after { background: var(--seguro); }
+        .combo-card.PENDENTE::after { background: var(--atencao); }
+        .combo-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
+        .combo-produtos { font-size:.9rem; font-weight:600; line-height:1.5; }
+        .plus { color:var(--accent); font-family:var(--mono); }
+        .combo-stats { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin-top:1rem; }
+        .stat { background:var(--surface2); border-radius:8px; padding:.7rem .9rem; }
+        .stat-label { font-family:var(--mono); font-size:.62rem; color:var(--muted); letter-spacing:.05em; margin-bottom:.2rem; }
+        .stat-value { font-family:var(--mono); font-size:.95rem; font-weight:700; }
+        .stat-value.accent { color:var(--accent2); }
+        .stat-value.green  { color:var(--seguro); }
+        .stat-value.sm     { font-size:.78rem; }
+        .stat-value.urgent { color:var(--urgente); }
+        .combo-footer { margin-top:1rem; padding-top:.8rem; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
+        .btn-aprovar { font-family:var(--mono); font-size:.65rem; padding:.25rem .6rem; border-radius:4px; border:1px solid var(--accent); background:transparent; color:var(--accent); cursor:pointer; transition:all .2s; }
+        .btn-aprovar:hover { background:var(--accent); color:#fff; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>combos</span></div>
+                <div class="page-subtitle">Combos estratégicos — Cesta de Afinidade</div>
+            </div>
+            <span class="card-count" id="combos-count">—</span>
+        </div>
+
+        <div class="filters" id="filtros">
+            <button class="filter-btn active" data-status="">Todos</button>
+            <button class="filter-btn" data-status="ATIVO">Ativo</button>
+            <button class="filter-btn" data-status="APROVADO">Aprovado</button>
+            <button class="filter-btn" data-status="PENDENTE">Pendente</button>
+        </div>
+
+        <div class="grid-auto" id="combos-grid"></div>
+    </main>
+</div>
+<script type="module" src="../assets/js/combos.js?v=3"></script>
+</body>
+</html>

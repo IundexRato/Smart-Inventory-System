@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos — Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<div class="layout">
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>produtos</span></div>
+                <div class="page-subtitle">Cadastro master de produtos</div>
+            </div>
+            <span class="card-count" id="produtos-count">—</span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">PRODUTOS</span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Unidade</th>
+                            <th>Custo</th>
+                            <th>Venda</th>
+                            <th>Margem</th>
+                            <th>Lotes</th>
+                            <th>Estoque</th>
+                        </tr>
+                    </thead>
+                    <tbody id="produtos-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<script type="module" src="../assets/js/produtos.js?v=3"></script>
+</body>
+</html>

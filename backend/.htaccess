@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Block direct browser access to internal backend folders.
+RewriteRule ^(app|core|config|database)(/.*)?$ - [F,L]
+
+# Send backend URLs to the public front controller.
+RewriteRule ^(?!public/)(.*)$ public/$1 [L]

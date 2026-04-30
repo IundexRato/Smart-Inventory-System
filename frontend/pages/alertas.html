@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertas — Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <style>
+        .alerta-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.4rem;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+            border-left: 3px solid transparent;
+            transition: border-color .2s;
+        }
+        .alerta-item:last-child { border-bottom: none; }
+        .alerta-item.URGENTE { border-left-color: var(--urgente); }
+        .alerta-item.CRITICO { border-left-color: var(--critico); }
+        .alerta-item.ATENCAO { border-left-color: var(--atencao); }
+        .alerta-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+        .alerta-body { flex:1; min-width:0; }
+        .alerta-top  { display:flex; justify-content:space-between; align-items:flex-start; gap:.5rem; }
+        .alerta-prod { font-weight:600; font-size:.88rem; }
+        .alerta-msg  { font-size:.8rem; color:var(--muted); margin-top:.3rem; }
+        .alerta-meta { display:flex; gap:.5rem; margin-top:.6rem; flex-wrap:wrap; align-items:center; }
+        .btn-marcar  { font-family:var(--mono); font-size:.65rem; padding:.25rem .6rem; border-radius:4px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all .2s; }
+        .btn-marcar:hover { border-color:var(--seguro); color:var(--seguro); }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>alertas</span></div>
+                <div class="page-subtitle">Log de notificações do sistema</div>
+            </div>
+            <span class="card-count" id="alertas-count">—</span>
+        </div>
+
+        <div class="filters" id="filtros">
+            <button class="filter-btn active" data-filter="todos">Todos</button>
+            <button class="filter-btn" data-filter="pendentes">Pendentes</button>
+        </div>
+
+        <div class="card">
+            <div id="alertas-list"></div>
+        </div>
+    </main>
+</div>
+<script type="module" src="../assets/js/alertas.js?v=3"></script>
+</body>
+</html>

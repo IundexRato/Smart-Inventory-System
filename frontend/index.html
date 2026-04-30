@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Smart Inventory</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div class="layout">
+    <!-- sidebar injetada via sidebar.js -->
+
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>dashboard</span></div>
+                <div class="page-subtitle">Visão geral do inventário em tempo real</div>
+            </div>
+            <div class="badge-live">LIVE</div>
+        </div>
+
+        <!-- Loading global -->
+        <div id="loading" class="loading" style="display:none">Carregando...</div>
+
+        <!-- KPIs -->
+        <div id="kpis" class="kpis"></div>
+
+        <!-- Lotes em risco + sidebar direita -->
+        <div class="grid-2-1" style="margin-bottom:1.5rem">
+
+            <!-- Lotes em risco -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">LOTES EM RISCO</span>
+                    <span class="card-count" id="lotes-risco-count">—</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Status</th>
+                                <th>Dias</th>
+                                <th>Qtd</th>
+                                <th>Combo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lotes-risco-body">
+                            <tr><td colspan="5" class="loading">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Coluna direita -->
+            <div class="flex-col">
+
+                <!-- Distribuição -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">DISTRIBUIÇÃO</span>
+                    </div>
+                    <div id="distribuicao"></div>
+                </div>
+
+                <!-- Alertas recentes -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">ALERTAS RECENTES</span>
+                    </div>
+                    <div id="alertas-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combos -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">COMBOS ESTRATÉGICOS</span>
+                <span class="card-count" id="combos-count">—</span>
+            </div>
+            <div id="combos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))"></div>
+        </div>
+
+    </main>
+</div>
+<script type="module" src="assets/js/dashboard.js?v=3"></script>
+</body>
+</html>

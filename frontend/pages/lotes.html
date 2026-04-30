@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotes — Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<div class="layout">
+
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>lotes</span></div>
+                <div class="page-subtitle">Gestão FEFO — todos os lotes cadastrados</div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters" id="filtros">
+            <button class="filter-btn active" data-status="">Todos</button>
+            <button class="filter-btn" data-status="URGENTE">Urgente</button>
+            <button class="filter-btn" data-status="CRITICO">Crítico</button>
+            <button class="filter-btn" data-status="ATENCAO">Atenção</button>
+            <button class="filter-btn" data-status="SEGURO">Seguro</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">LOTES</span>
+                <span class="card-count" id="lotes-count">—</span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Fornecedor</th>
+                            <th>Código Lote</th>
+                            <th>Qtd</th>
+                            <th>Validade</th>
+                            <th>Dias</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lotes-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<script type="module" src="../assets/js/lotes.js?v=3"></script>
+</body>
+</html>

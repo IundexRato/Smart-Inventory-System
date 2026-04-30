@@ -1,0 +1,34 @@
+======================================================
+  ARQUIVO: backend/.htaccess
+  INSTRUÇÃO: salve este arquivo como ".htaccess"
+  (só o ponto + htaccess, sem extensão .txt)
+  LOCAL: smart_inventory_v2/backend/
+======================================================
+
+# backend/.htaccess
+# Responsabilidade: impedir acesso direto às pastas internas pelo navegador
+# Ninguém deve conseguir acessar /backend/core/, /backend/app/, /backend/config/ diretamente
+
+RewriteEngine On
+
+# Bloqueia acesso direto a pastas sensíveis
+RewriteRule ^(app|core|config|database)(/.*)?$ - [F,L]
+
+# Qualquer outra rota vai para public/index.php
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]
+
+
+======================================================
+  ARQUIVO: backend/public/.htaccess
+  INSTRUÇÃO: salve este arquivo como ".htaccess"
+  LOCAL: smart_inventory_v2/backend/public/
+======================================================
+
+# backend/public/.htaccess
+# Responsabilidade: redirecionar todas as URLs para index.php (front controller)
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]

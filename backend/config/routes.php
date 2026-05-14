@@ -9,6 +9,8 @@ use App\Controllers\ComboController;
 use App\Controllers\ProdutoController;
 use App\Controllers\AlertaController;
 use App\Controllers\DashboardController;
+use App\Controllers\CategoriaController;
+use App\Controllers\FornecedorController;
 
 return function (Router $router): void {
 
@@ -37,6 +39,7 @@ return function (Router $router): void {
     $router->get   ('/api/combos',             [new ComboController, 'index']);
     $router->get   ('/api/combos/:id',         [new ComboController, 'show']);
     $router->post  ('/api/combos',             [new ComboController, 'store']);
+    $router->put   ('/api/combos/:id',         [new ComboController, 'update']);
     $router->put   ('/api/combos/:id/aprovar', [new ComboController, 'aprovar']);
     $router->delete('/api/combos/:id',         [new ComboController, 'destroy']);
 
@@ -49,6 +52,17 @@ return function (Router $router): void {
     $router->get ('/api/produtos/:id', [new ProdutoController, 'show']);
     $router->post('/api/produtos',     [new ProdutoController, 'store']);
     $router->put ('/api/produtos/:id', [new ProdutoController, 'update']);
+    $router->delete('/api/produtos/:id', [new ProdutoController, 'destroy']);
+
+    // Categorias
+    $router->get   ('/api/categorias',     [new CategoriaController, 'index']);
+    $router->get   ('/api/categorias/:id', [new CategoriaController, 'show']);
+    $router->post  ('/api/categorias',     [new CategoriaController, 'store']);
+    $router->put   ('/api/categorias/:id', [new CategoriaController, 'update']);
+    $router->delete('/api/categorias/:id', [new CategoriaController, 'destroy']);
+
+    // Fornecedores
+    $router->get('/api/fornecedores', [new FornecedorController, 'index']);
 
     // ── Alertas ───────────────────────────────────────────
     // GET /api/alertas               — lista (aceita ?enviado=0)

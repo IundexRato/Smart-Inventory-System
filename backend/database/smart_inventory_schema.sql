@@ -20,6 +20,7 @@ USE smart_inventory;
 CREATE TABLE categorias (
     id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nome          VARCHAR(100)  NOT NULL,
+    prefixo       VARCHAR(5)    NOT NULL DEFAULT 'PRD' COMMENT 'Prefixo usado para gerar SKU automaticamente',
     descricao     TEXT,
     criado_em     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -36,6 +37,7 @@ CREATE TABLE produtos (
     nome            VARCHAR(150)  NOT NULL,
     descricao       TEXT,
     unidade_medida  ENUM('UN','KG','LT','CX','PCT') NOT NULL DEFAULT 'UN',
+    peso            DECIMAL(10,3) NOT NULL DEFAULT 0.000,
     preco_custo     DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     preco_venda     DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     margem_lucro    DECIMAL(5,2)  GENERATED ALWAYS AS (

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorias - Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<div class="layout">
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>categorias</span></div>
+                <div class="page-subtitle">Categorias de produto e prefixos para SKU automatico</div>
+            </div>
+            <span class="card-count" id="categorias-count">-</span>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <div class="stack">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title" id="form-title">NOVA CATEGORIA</span>
+                    <button class="btn btn-secondary btn-small" id="cancel-edit" type="button" hidden>Cancelar</button>
+                </div>
+                <div class="form-body">
+                    <form id="categoria-form">
+                        <input type="hidden" id="categoria-id">
+                        <div class="form-grid">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Nome <span class="form-required">*</span></label>
+                                <input id="nome" maxlength="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Prefixo SKU <span class="form-required">*</span></label>
+                                <input id="prefixo" maxlength="5" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Salvar categoria</button>
+                            <button class="btn btn-secondary" type="reset">Limpar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><span class="card-title">CATEGORIAS</span></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Prefixo</th>
+                                <th>Produtos</th>
+                                <th>Acoes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categorias-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script type="module" src="../assets/js/categorias.js?v=1"></script>
+</body>
+</html>

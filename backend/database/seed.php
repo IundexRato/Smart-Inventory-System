@@ -21,8 +21,12 @@ foreach (['alertas','combos','itens_venda','vendas','afinidade_produtos','lotes'
 $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
 // Categorias
-$pdo->exec("INSERT INTO categorias (nome) VALUES
-    ('Laticínios'),('Frios e Embutidos'),('Padaria'),('Bebidas'),('Hortifruti')");
+$pdo->exec("INSERT INTO categorias (nome, prefixo) VALUES
+    ('Laticínios','LAT'),
+    ('Frios e Embutidos','FRI'),
+    ('Padaria','PAD'),
+    ('Bebidas','BEB'),
+    ('Hortifruti','HOR')");
 
 // Fornecedores
 $pdo->exec("INSERT INTO fornecedores (razao_social, cnpj) VALUES

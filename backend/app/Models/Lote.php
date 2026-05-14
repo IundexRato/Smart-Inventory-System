@@ -68,4 +68,22 @@ class Lote extends Model {
             GROUP BY status_validade
         ");
     }
+
+    public function nextCodigoLote(): string {
+        $hoje = date('Y-m-d');
+        $total = (int) $this->queryScalar(
+            "SELECT COUNT(*) FROM lotes WHERE DATE(data_entrada) = ?",
+            [$hoje]
+        );
+
+        return 'L-' . date('Ymd') . '-' . str_pad((string) ($total + 1), 3, '0', STR_PAD_LEFT);
+    }
+
+    public function comboCount(int $id): int {
+        return (int) $this->queryScalar("SELECT COUNT(*) FROM combos WHERE lote_id = ?", [$id]);
+    }
+
+    public function deleteAlertas(int $id): void {
+        $this->execute("DELETE FROM alertas WHERE lote_id = ?", [$id]);
+    }
 }

@@ -2,7 +2,7 @@
 // Responsabilidade: buscar dados da API e renderizar o dashboard
 
 import api from './api.js?v=3';
-import { renderSidebar } from '../../components/sidebar.js?v=3';
+import { renderSidebar } from '../../components/sidebar.js?v=4';
 import { statusBadge, diasBar, loadingHTML, errorHTML, formatMoeda } from '../../components/statusBadge.js?v=3';
 
 // ── Init ──────────────────────────────────────────────────

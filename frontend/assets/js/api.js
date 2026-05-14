@@ -3,7 +3,11 @@
 
 function getApiBase() {
     if (window.location.protocol === 'file:') {
-        return 'http://localhost/smart_inventory_v2/backend/public';
+        const parts = window.location.pathname.replace(/\\/g, '/').split('/');
+        const frontendIndex = parts.lastIndexOf('frontend');
+        const projectFolder = frontendIndex > 0 ? parts[frontendIndex - 1] : 'Smart-Inventory-System-main';
+
+        return `http://localhost/${projectFolder}/backend/public`;
     }
 
     return new URL('../../../backend/public', import.meta.url).pathname;
@@ -68,6 +72,7 @@ const api = {
         list: (status = '') => request('GET', `/api/combos${status ? '?status=' + encodeURIComponent(status) : ''}`),
         get: (id) => request('GET', `/api/combos/${id}`),
         create: (data) => request('POST', '/api/combos', data),
+        update: (id, data) => request('PUT', `/api/combos/${id}`, data),
         aprovar: (id, aprovadoPor) => request('PUT', `/api/combos/${id}/aprovar`, { aprovado_por: aprovadoPor }),
         delete: (id) => request('DELETE', `/api/combos/${id}`),
     },
@@ -77,6 +82,19 @@ const api = {
         get: (id) => request('GET', `/api/produtos/${id}`),
         create: (data) => request('POST', '/api/produtos', data),
         update: (id, data) => request('PUT', `/api/produtos/${id}`, data),
+        delete: (id) => request('DELETE', `/api/produtos/${id}`),
+    },
+
+    categorias: {
+        list: () => request('GET', '/api/categorias'),
+        get: (id) => request('GET', `/api/categorias/${id}`),
+        create: (data) => request('POST', '/api/categorias', data),
+        update: (id, data) => request('PUT', `/api/categorias/${id}`, data),
+        delete: (id) => request('DELETE', `/api/categorias/${id}`),
+    },
+
+    fornecedores: {
+        list: () => request('GET', '/api/fornecedores'),
     },
 
     alertas: {

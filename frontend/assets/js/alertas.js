@@ -1,6 +1,6 @@
 // frontend/assets/js/alertas.js
 import api from './api.js?v=3';
-import { renderSidebar } from '../../components/sidebar.js?v=3';
+import { renderSidebar } from '../../components/sidebar.js?v=4';
 import { statusBadge, tagEnviado, loadingHTML, errorHTML, formatData } from '../../components/statusBadge.js?v=3';
 
 document.addEventListener('DOMContentLoaded', () => {

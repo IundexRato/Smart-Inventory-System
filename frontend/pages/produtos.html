@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produtos — Smart Inventory</title>
+    <title>Produtos - Smart Inventory</title>
     <link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
@@ -12,36 +12,95 @@
         <div class="page-header">
             <div>
                 <div class="page-title">/<span>produtos</span></div>
-                <div class="page-subtitle">Cadastro master de produtos</div>
+                <div class="page-subtitle">Cadastro master, SKU automatico e edicao de produtos</div>
             </div>
-            <span class="card-count" id="produtos-count">—</span>
+            <span class="card-count" id="produtos-count">-</span>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">PRODUTOS</span>
+        <div class="toast" id="toast"></div>
+
+        <div class="stack">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title" id="form-title">NOVO PRODUTO</span>
+                    <button class="btn btn-secondary btn-small" id="cancel-edit" type="button" hidden>Cancelar</button>
+                </div>
+                <div class="form-body">
+                    <form id="produto-form">
+                        <input type="hidden" id="produto-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Categoria <span class="form-required">*</span></label>
+                                <select id="categoria_id" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>SKU</label>
+                                <input id="sku" maxlength="50" placeholder="Vazio gera automaticamente">
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Nome <span class="form-required">*</span></label>
+                                <input id="nome" maxlength="150" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Unidade</label>
+                                <select id="unidade_medida">
+                                    <option>UN</option>
+                                    <option>KG</option>
+                                    <option>LT</option>
+                                    <option>CX</option>
+                                    <option>PCT</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Peso (kg)</label>
+                                <input id="peso" type="number" min="0" step="0.001" placeholder="0.000">
+                            </div>
+                            <div class="form-group">
+                                <label>Custo (R$)</label>
+                                <input id="preco_custo" type="number" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label>Venda (R$)</label>
+                                <input id="preco_venda" type="number" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Salvar produto</button>
+                            <button class="btn btn-secondary" type="reset">Limpar</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>SKU</th>
-                            <th>Nome</th>
-                            <th>Categoria</th>
-                            <th>Unidade</th>
-                            <th>Custo</th>
-                            <th>Venda</th>
-                            <th>Margem</th>
-                            <th>Lotes</th>
-                            <th>Estoque</th>
-                        </tr>
-                    </thead>
-                    <tbody id="produtos-tbody"></tbody>
-                </table>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">PRODUTOS</span>
+                    <input class="search-input" id="search-input" placeholder="Buscar produto...">
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Unidade</th>
+                                <th>Peso</th>
+                                <th>Custo</th>
+                                <th>Venda</th>
+                                <th>Margem</th>
+                                <th>Lotes</th>
+                                <th>Estoque</th>
+                                <th>Acoes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="produtos-tbody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
 </div>
-<script type="module" src="../assets/js/produtos.js?v=3"></script>
+<script type="module" src="../assets/js/produtos.js?v=4"></script>
 </body>
 </html>

@@ -14,6 +14,7 @@ class Combo extends Model {
                    lo.nome  AS produto_origem,
                    lo.sku,
                    lp.nome  AS produto_parceiro,
+                   l.codigo_lote,
                    l.status_validade,
                    l.data_validade,
                    l.quantidade,
@@ -33,5 +34,13 @@ class Combo extends Model {
             'aprovado_por' => $aprovadoPor,
             'aprovado_em'  => date('Y-m-d H:i:s'),
         ]);
+    }
+
+    public function ativar(int $id): bool {
+        return $this->update($id, ['status' => 'ATIVO']);
+    }
+
+    public function rejeitar(int $id): bool {
+        return $this->update($id, ['status' => 'REJEITADO']);
     }
 }

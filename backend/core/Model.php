@@ -85,4 +85,10 @@ abstract class Model {
         $stmt->execute($params);
         return $stmt->fetchColumn();
     }
+
+    // Executa comandos sem result set (DELETE/UPDATE customizados)
+    protected function execute(string $sql, array $params = []): bool {
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
+    }
 }

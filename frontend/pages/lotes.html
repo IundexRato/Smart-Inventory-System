@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotes — Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<div class="layout">
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>lotes</span></div>
+                <div class="page-subtitle">Gestão FEFO com criação e remoção segura de lotes</div>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <div class="stack">
+            <div class="card">
+                <div class="card-header"><span class="card-title">NOVO LOTE</span></div>
+                <div class="form-body">
+                    <form id="lote-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Produto <span class="form-required">*</span></label>
+                                <!-- substituído por searchable select via JS -->
+                                <select id="produto_id"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fornecedor</label>
+                                <select id="fornecedor_id"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Código do Lote</label>
+                                <input id="codigo_lote" maxlength="80" placeholder="Vazio gera automaticamente">
+                            </div>
+                            <div class="form-group">
+                                <label>Quantidade <span class="form-required">*</span></label>
+                                <input id="quantidade" type="number" min="0.001" step="0.001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Validade <span class="form-required">*</span></label>
+                                <input id="data_validade" type="date" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Adicionar lote</button>
+                            <button class="btn btn-secondary" type="reset">Limpar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="filters" id="filtros">
+                <button class="filter-btn active" data-status="">Todos</button>
+                <button class="filter-btn" data-status="URGENTE">Urgente</button>
+                <button class="filter-btn" data-status="CRITICO">Crítico</button>
+                <button class="filter-btn" data-status="ATENCAO">Atenção</button>
+                <button class="filter-btn" data-status="SEGURO">Seguro</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">LOTES</span>
+                    <div style="display:flex;gap:.5rem;align-items:center">
+                        <input class="search-input" id="lotes-search" placeholder="Buscar produto...">
+                        <span class="card-count" id="lotes-count">—</span>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Produto</th>
+                                <th>Categoria</th>
+                                <th>Fornecedor</th>
+                                <th>Código</th>
+                                <th>Qtd</th>
+                                <th>Validade</th>
+                                <th>Dias</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lotes-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script type="module" src="../assets/js/lotes.js"></script>
+</body>
+</html>

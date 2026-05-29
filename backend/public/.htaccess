@@ -1,0 +1,14 @@
+# backend/public/.htaccess
+# Responsabilidade: redirecionar todas as URLs para index.php (front controller)
+# e permitir tempo extra de execução para scripts pesados como o seed.
+
+# Aumenta limite de execução para o seed.php (sem afetar a API)
+<Files "seed.php">
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+</Files>
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

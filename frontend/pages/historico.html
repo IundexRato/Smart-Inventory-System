@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Vendas — Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <style>
+        .filtros-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: .8rem;
+            padding: 1.2rem 1.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .filtro-group {
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+        }
+        .filtro-group label {
+            font-family: var(--mono);
+            font-size: .65rem;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .filtro-group input,
+        .filtro-group select {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: .82rem;
+            padding: .45rem .7rem;
+            outline: none;
+            width: 100%;
+            transition: border-color .2s;
+        }
+        .filtro-group input:focus,
+        .filtro-group select:focus { border-color: var(--accent); }
+        .filtro-group select option { background: var(--surface2); }
+
+        .resumo-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .resumo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+        }
+        .resumo-label {
+            font-family: var(--mono);
+            font-size: .66rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+        .resumo-valor {
+            font-family: var(--mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: .3rem;
+        }
+        .ordem-btn {
+            font-family: var(--mono);
+            font-size: .7rem;
+            padding: .3rem .7rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .ordem-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>histórico</span></div>
+                <div class="page-subtitle">Histórico de vendas — padrão 90 dias, com filtros avançados</div>
+            </div>
+            <span class="card-count" id="historico-count">—</span>
+        </div>
+
+        <!-- Resumo rápido -->
+        <div class="resumo-cards" id="resumo-cards">
+            <div class="resumo-card"><div class="resumo-label">Registros</div><div class="resumo-valor" id="r-registros">—</div></div>
+            <div class="resumo-card"><div class="resumo-label">Qtd Vendida</div><div class="resumo-valor" id="r-qtd">—</div></div>
+            <div class="resumo-card"><div class="resumo-label">Num Vendas</div><div class="resumo-valor" id="r-vendas">—</div></div>
+            <div class="resumo-card"><div class="resumo-label">Receita Total</div><div class="resumo-valor" id="r-receita">—</div></div>
+        </div>
+
+        <div class="card">
+            <!-- Filtros -->
+            <div class="filtros-grid">
+                <!-- Data Inicial -->
+                <div class="filtro-group">
+                    <label>Data Inicial</label>
+                    <input type="date" id="f-data-ini">
+                </div>
+                <!-- Data Final -->
+                <div class="filtro-group">
+                    <label>Data Final</label>
+                    <input type="date" id="f-data-fim">
+                </div>
+                <!-- Mês -->
+                <div class="filtro-group">
+                    <label>Mês</label>
+                    <select id="f-mes">
+                        <option value="">Todos</option>
+                        <option value="1">Janeiro</option>
+                        <option value="2">Fevereiro</option>
+                        <option value="3">Março</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Maio</option>
+                        <option value="6">Junho</option>
+                        <option value="7">Julho</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11">Novembro</option>
+                        <option value="12">Dezembro</option>
+                    </select>
+                </div>
+                <!-- Ano -->
+                <div class="filtro-group">
+                    <label>Ano</label>
+                    <select id="f-ano">
+                        <option value="">Todos</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
+                <!-- Produto -->
+                <div class="filtro-group">
+                    <label>Produto</label>
+                    <select id="f-produto">
+                        <option value="">Todos os produtos</option>
+                    </select>
+                </div>
+                <!-- Ações -->
+                <div class="filtro-group" style="justify-content:flex-end">
+                    <label>&nbsp;</label>
+                    <div style="display:flex;gap:.5rem;align-items:center">
+                        <button class="btn btn-primary btn-small" id="btn-filtrar">Filtrar</button>
+                        <button class="btn btn-secondary btn-small" id="btn-limpar">Limpar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ordenação -->
+            <div style="display:flex;gap:.5rem;padding:.8rem 1.4rem;border-bottom:1px solid var(--border);align-items:center">
+                <span style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-right:.3rem">ORDENAR POR QTD:</span>
+                <button class="ordem-btn" id="ord-desc" data-order="desc">↓ Maior primeiro</button>
+                <button class="ordem-btn" id="ord-asc"  data-order="asc">↑ Menor primeiro</button>
+            </div>
+
+            <!-- Tabela -->
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>SKU</th>
+                            <th>Qtd Vendida</th>
+                            <th>Nº Vendas</th>
+                            <th>Preço Médio</th>
+                            <th>Receita</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historico-tbody">
+                        <tr><td colspan="8" class="loading">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<script type="module" src="../assets/js/historico.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combos - Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<div class="layout">
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>combos</span></div>
+                <div class="page-subtitle">Combos estrategicos com criacao, edicao e aprovacao</div>
+            </div>
+            <span class="card-count" id="combos-count">-</span>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <div class="stack">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title" id="form-title">NOVO COMBO</span>
+                    <button class="btn btn-secondary btn-small" id="cancel-edit" type="button" hidden>Cancelar</button>
+                </div>
+                <div class="form-body">
+                    <form id="combo-form">
+                        <input type="hidden" id="combo-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Lote <span class="form-required">*</span></label>
+                                <select id="lote_id"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Produto parceiro <small style="color:var(--muted);font-family:var(--mono);font-size:.6rem">— opcional</small></label>
+                                <select id="produto_parceiro_id"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Desconto (%)</label>
+                                <input id="desconto_combo" type="number" min="0" max="100" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Preço combo (R$) <small style="color:var(--muted);font-family:var(--mono);font-size:.6rem">— vazio = calculado</small></label>
+                                <input id="preco_combo" type="number" min="0.01" step="0.01" placeholder="Calculado automaticamente">
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="status">
+                                    <option>PENDENTE</option>
+                                    <option>APROVADO</option>
+                                    <option>ATIVO</option>
+                                    <option>ENCERRADO</option>
+                                    <option>REJEITADO</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Valido ate <span class="form-required">*</span></label>
+                                <input id="valido_ate" type="date" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Salvar combo</button>
+                            <button class="btn btn-secondary" type="reset">Limpar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="filters" id="filtros">
+                <button class="filter-btn active" data-status="">Todos</button>
+                <button class="filter-btn" data-status="ATIVO">Ativo</button>
+                <button class="filter-btn" data-status="APROVADO">Aprovado</button>
+                <button class="filter-btn" data-status="PENDENTE">Pendente</button>
+                <button class="filter-btn" data-status="REJEITADO">Rejeitado</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><span class="card-title">COMBOS</span></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Lote</th>
+                                <th>Produto</th>
+                                <th>Parceiro</th>
+                                <th>Preco</th>
+                                <th>Desconto</th>
+                                <th>Status</th>
+                                <th>Validade</th>
+                                <th>Dias</th>
+                                <th>Acoes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="combos-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script type="module" src="../assets/js/combos.js"></script>
+</body>
+</html>

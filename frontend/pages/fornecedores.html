@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fornecedores — Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<div class="layout">
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>fornecedores</span></div>
+                <div class="page-subtitle">Cadastro de parceiros comerciais, responsáveis e status de parceria</div>
+            </div>
+            <span class="card-count" id="fornecedores-count">—</span>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <div class="stack">
+            <!-- Formulário -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title" id="form-title">NOVO FORNECEDOR</span>
+                    <button class="btn btn-secondary btn-small" id="cancel-edit" type="button" hidden>Cancelar</button>
+                </div>
+                <div class="form-body">
+                    <form id="fornecedor-form">
+                        <input type="hidden" id="fornecedor-id">
+                        <div class="form-grid">
+                            <div class="form-group" style="grid-column:span 2">
+                                <label>Razão Social <span class="form-required">*</span></label>
+                                <input id="razao_social" maxlength="150" required>
+                            </div>
+                            <div class="form-group">
+                                <label>CNPJ</label>
+                                <input id="cnpj" maxlength="18" placeholder="00.000.000/0000-00">
+                            </div>
+                            <div class="form-group">
+                                <label>Nome do Responsável</label>
+                                <input id="nome_responsavel" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Contato / Depto</label>
+                                <input id="contato" maxlength="100" placeholder="Ex: Vendas, SAC">
+                            </div>
+                            <div class="form-group">
+                                <label>E-mail</label>
+                                <input id="email" type="email" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Telefone</label>
+                                <input id="telefone" maxlength="20" placeholder="(00) 00000-0000">
+                            </div>
+                            <div class="form-group" id="grupo-status" hidden>
+                                <label>Status da Parceria</label>
+                                <select id="ativo">
+                                    <option value="1">ATIVO</option>
+                                    <option value="0">ENCERRADO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Salvar fornecedor</button>
+                            <button class="btn btn-secondary" type="reset">Limpar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filters">
+                <button class="filter-btn active" data-ativo="">Todos</button>
+                <button class="filter-btn" data-ativo="1">Ativos</button>
+                <button class="filter-btn" data-ativo="0">Encerrados</button>
+            </div>
+
+            <!-- Tabela -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">FORNECEDORES</span>
+                    <input class="search-input" id="search-input" placeholder="Buscar fornecedor...">
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Razão Social</th>
+                                <th>CNPJ</th>
+                                <th>Responsável</th>
+                                <th>Contato</th>
+                                <th>E-mail</th>
+                                <th>Telefone</th>
+                                <th>Status</th>
+                                <th>Desde</th>
+                                <th>Últ. Edição</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fornecedores-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script type="module" src="../assets/js/fornecedores.js?v=1"></script>
+</body>
+</html>

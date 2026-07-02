@@ -137,6 +137,36 @@ class Database {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
         }
 
+        // ── v3.0: índice único em codigo_lote ────────────────────────────────
+        if (!self::indexExists($pdo, $database, 'lotes', 'uq_codigo_lote')) {
+            // Verifica se já existe duplicata antes de criar (segurança)
+            $pdo->exec("ALTER TABLE lotes ADD UNIQUE INDEX uq_codigo_lote (codigo_lote)");
+        }
+
+        // ── v3.0: tabela de saídas de estoque ────────────────────────────────
+        if (!self::tableExists($pdo, $database, 'saidas_estoque')) {
+            $pdo->exec("CREATE TABLE saidas_estoque (
+                id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                lote_id     INT UNSIGNED  NOT NULL,
+                quantidade  DECIMAL(10,3) NOT NULL,
+                motivo      ENUM('VENCIMENTO','QUEBRA','DOACAO','AJUSTE','OUTROS') NOT NULL,
+                observacao  TEXT,
+                criado_em   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_saida_lote FOREIGN KEY (lote_id)
+                    REFERENCES lotes(id) ON DELETE RESTRICT,
+                INDEX idx_saida_lote   (lote_id),
+                INDEX idx_saida_motivo (motivo),
+                INDEX idx_saida_data   (criado_em)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+              COMMENT='Baixas manuais de estoque'");
+        }
+
+        // ── v3.0: combos.produto_parceiro_id aceita NULL (combo unitário) ───
+        if (!self::columnIsNullable($pdo, $database, 'combos', 'produto_parceiro_id')) {
+            $pdo->exec("ALTER TABLE combos
+                MODIFY COLUMN produto_parceiro_id INT UNSIGNED NULL DEFAULT NULL");
+        }
+
         // Recriar view de histórico (idempotente com CREATE OR REPLACE)
         $pdo->exec("CREATE OR REPLACE VIEW vw_historico_vendas AS
             SELECT
@@ -203,6 +233,18 @@ class Database {
 
     private static function shouldSkipSchemaStatement(string $statement): bool {
         return (bool) preg_match('/^(CREATE\s+DATABASE|USE)\b/i', ltrim($statement));
+    }
+
+    private static function indexExists(PDO $pdo, string $database, string $table, string $indexName): bool {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?");
+        $stmt->execute([$database, $table, $indexName]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    private static function columnIsNullable(PDO $pdo, string $database, string $table, string $column): bool {
+        $stmt = $pdo->prepare("SELECT IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?");
+        $stmt->execute([$database, $table, $column]);
+        return $stmt->fetchColumn() === 'YES';
     }
 
     private static function quoteIdentifier(string $identifier): string {

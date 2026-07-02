@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saídas de Estoque — Smart Inventory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<div class="layout">
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">/<span>saídas</span></div>
+                <div class="page-subtitle">Baixas manuais de estoque: vencimento, quebra, doação e ajustes</div>
+            </div>
+            <span class="card-count" id="saidas-count">—</span>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <div class="stack">
+            <!-- Formulário de nova saída -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">REGISTRAR SAÍDA</span>
+                </div>
+                <div class="form-body">
+                    <form id="saida-form">
+                        <div class="form-grid">
+                            <div class="form-group" style="grid-column:span 2">
+                                <label>Lote <span class="form-required">*</span></label>
+                                <input id="lote_input" list="lotes-list"
+                                       placeholder="Buscar por produto, SKU ou código do lote..."
+                                       autocomplete="off" required>
+                                <datalist id="lotes-list"></datalist>
+                                <input type="hidden" id="lote_id">
+                            </div>
+                            <div class="form-group">
+                                <label>Motivo <span class="form-required">*</span></label>
+                                <select id="motivo" required>
+                                    <option value="VENCIMENTO">Vencimento</option>
+                                    <option value="QUEBRA">Quebra / Dano físico</option>
+                                    <option value="DOACAO">Doação</option>
+                                    <option value="AJUSTE">Ajuste de inventário</option>
+                                    <option value="OUTROS">Outros</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantidade <span class="form-required">*</span></label>
+                                <input id="quantidade" type="number"
+                                       min="0.001" step="0.001" required
+                                       placeholder="0">
+                            </div>
+                            <div class="form-group" style="grid-column:span 2">
+                                <label>Observação</label>
+                                <input id="observacao" type="text"
+                                       placeholder="Detalhes adicionais (opcional)"
+                                       maxlength="500">
+                            </div>
+                        </div>
+                        <div id="lote-preview" style="display:none;margin-bottom:1rem;
+                             padding:.7rem 1rem;background:var(--surface2);
+                             border-radius:6px;border:1px solid var(--border);
+                             font-family:var(--mono);font-size:.78rem;color:var(--muted)">
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-danger" type="submit">Confirmar Saída</button>
+                            <button class="btn btn-secondary" type="reset"
+                                    id="btn-limpar">Limpar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Filtro por motivo -->
+            <div class="filters" id="filtros-motivo">
+                <button class="filter-btn active" data-motivo="">Todos</button>
+                <button class="filter-btn" data-motivo="VENCIMENTO">Vencimento</button>
+                <button class="filter-btn" data-motivo="QUEBRA">Quebra</button>
+                <button class="filter-btn" data-motivo="DOACAO">Doação</button>
+                <button class="filter-btn" data-motivo="AJUSTE">Ajuste</button>
+                <button class="filter-btn" data-motivo="OUTROS">Outros</button>
+            </div>
+
+            <!-- Histórico de saídas -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">HISTÓRICO DE SAÍDAS</span>
+                    <input class="search-input" id="saidas-search" placeholder="Buscar produto ou lote...">
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Produto</th>
+                                <th>Código do Lote</th>
+                                <th>Motivo</th>
+                                <th>Quantidade</th>
+                                <th>Observação</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="saidas-tbody">
+                            <tr><td colspan="7" class="loading">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script type="module" src="../assets/js/saidas.js"></script>
+</body>
+</html>

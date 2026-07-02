@@ -4,23 +4,22 @@ namespace App\Controllers;
 
 use Core\Controller;
 use App\Models\Lote;
-use App\Services\FefoService;
+use App\Models\Saida;
 
 class LoteController extends Controller {
-    private Lote $model;
-    private FefoService $fefo;
+    private Lote  $model;
+    private Saida $saidaModel;
 
     public function __construct() {
-        $this->model = new Lote();
-        $this->fefo = new FefoService();
+        $this->model      = new Lote();
+        $this->saidaModel = new Saida();
     }
 
     public function index(): void {
         $status = $this->query('status');
-        $data = $status
+        $data   = $status
             ? $this->model->byStatus(strtoupper($status))
             : $this->model->allWithDetails();
-
         $this->json($data);
     }
 
@@ -38,8 +37,12 @@ class LoteController extends Controller {
             return;
         }
 
-        $body['codigo_lote'] = trim((string) ($body['codigo_lote'] ?? '')) ?: $this->model->nextCodigoLote((int) $body['produto_id']);
-        $body['status_validade'] = $this->fefo->classificarStatus($body['data_validade']);
+        // Código gerado automaticamente se não informado
+        $body['codigo_lote'] = trim((string) ($body['codigo_lote'] ?? ''))
+            ?: $this->model->nextCodigoLote((int) $body['produto_id']);
+
+        // Status calculado pelo trigger MySQL — não precisa ser calculado aqui
+        // Passamos apenas os dados; o trigger garante o status correto no INSERT
 
         $id = $this->model->insert($body);
         $this->json($this->model->find($id), 201);
@@ -54,9 +57,9 @@ class LoteController extends Controller {
         }
 
         $body = $this->body();
-        if (isset($body['data_validade'])) {
-            $body['status_validade'] = $this->fefo->classificarStatus($body['data_validade']);
-        }
+
+        // Remove status_validade do body — o trigger recalcula automaticamente
+        unset($body['status_validade']);
 
         if ($body !== []) {
             $this->model->update($loteId, $body);
@@ -82,5 +85,58 @@ class LoteController extends Controller {
         $this->model->deleteAlertas($loteId);
         $this->model->delete($loteId);
         $this->json(['deleted' => true]);
+    }
+
+    /**
+     * POST /api/lotes/:id/saida
+     * Registra saída manual de estoque (vencimento, quebra, doação, ajuste, outros).
+     */
+    public function saida(string $id): void {
+        $loteId = (int) $id;
+        $lote   = $this->model->find($loteId);
+
+        if (!$lote) {
+            $this->error('Lote nao encontrado', 404);
+            return;
+        }
+
+        $body = $this->body();
+        $this->validate($body, ['quantidade', 'motivo']);
+
+        $quantidade = (float) $body['quantidade'];
+        if ($quantidade <= 0) {
+            $this->error('Quantidade deve ser maior que zero', 422);
+            return;
+        }
+
+        if ($quantidade > (float) $lote['quantidade']) {
+            $this->error('Quantidade de saida maior que o estoque disponivel', 422);
+            return;
+        }
+
+        $motivosValidos = ['VENCIMENTO', 'QUEBRA', 'DOACAO', 'AJUSTE', 'OUTROS'];
+        $motivo = strtoupper(trim((string) $body['motivo']));
+        if (!in_array($motivo, $motivosValidos, true)) {
+            $this->error('Motivo invalido. Use: ' . implode(', ', $motivosValidos), 422);
+            return;
+        }
+
+        // Registra a saída e decrementa o estoque
+        $saidaId = $this->saidaModel->insert([
+            'lote_id'     => $loteId,
+            'quantidade'  => $quantidade,
+            'motivo'      => $motivo,
+            'observacao'  => trim((string) ($body['observacao'] ?? '')),
+        ]);
+
+        $this->model->registrarSaida($loteId, $quantidade);
+
+        $this->json([
+            'saida_id'           => $saidaId,
+            'lote_id'            => $loteId,
+            'quantidade_baixada' => $quantidade,
+            'motivo'             => $motivo,
+            'estoque_restante'   => max(0, (float) $lote['quantidade'] - $quantidade),
+        ], 201);
     }
 }

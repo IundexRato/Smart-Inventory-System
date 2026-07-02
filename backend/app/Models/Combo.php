@@ -22,7 +22,7 @@ class Combo extends Model {
             FROM combos c
             JOIN lotes    l  ON l.id  = c.lote_id
             JOIN produtos lo ON lo.id = l.produto_id
-            JOIN produtos lp ON lp.id = c.produto_parceiro_id
+            LEFT JOIN produtos lp ON lp.id = c.produto_parceiro_id
             {$where}
             ORDER BY dias_validade ASC
         ", $params);

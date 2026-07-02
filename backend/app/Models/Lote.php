@@ -1,16 +1,11 @@
 <?php
 // app/Models/Lote.php
-// Responsabilidade: queries relacionadas à tabela `lotes`
-// Regras de negócio ficam no LoteService / FefoService
-
 namespace App\Models;
-
 use Core\Model;
 
 class Lote extends Model {
     protected string $table = 'lotes';
 
-    // Todos os lotes com dados do produto e fornecedor
     public function allWithDetails(): array {
         return $this->query("
             SELECT l.*,
@@ -25,26 +20,25 @@ class Lote extends Model {
         ");
     }
 
-    // Lotes filtrados por status
     public function byStatus(string $status): array {
         return $this->query("
             SELECT l.*,
                    p.nome AS produto_nome, p.sku,
-                   c.nome AS categoria
+                   c.nome AS categoria,
+                   f.razao_social AS fornecedor
             FROM lotes l
             JOIN produtos p   ON p.id = l.produto_id
             JOIN categorias c ON c.id = p.categoria_id
+            LEFT JOIN fornecedores f ON f.id = l.fornecedor_id
             WHERE l.status_validade = ?
             ORDER BY l.data_validade ASC
         ", [$status]);
     }
 
-    // Lotes em risco (view do banco) com combo sugerido
     public function emRisco(): array {
         return $this->query("SELECT * FROM vw_lotes_em_risco");
     }
 
-    // KPIs para o dashboard
     public function kpis(): array {
         return $this->queryOne("
             SELECT
@@ -59,7 +53,6 @@ class Lote extends Model {
         ");
     }
 
-    // Distribuição por status (para gráfico)
     public function distribuicao(): array {
         return $this->query("
             SELECT status_validade, COUNT(*) AS total
@@ -70,8 +63,6 @@ class Lote extends Model {
     }
 
     public function nextCodigoLote(int $produtoId): string {
-        // Padrão: xxxnnn-aaaammdd-nnn
-        // xxx = prefixo da categoria, nnn = número do produto na categoria
         $row = $this->queryOne("
             SELECT c.prefixo,
                    (SELECT COUNT(*) FROM produtos p2
@@ -85,20 +76,30 @@ class Lote extends Model {
         $seq     = str_pad((string)($row['seq'] ?? 1), 3, '0', STR_PAD_LEFT);
         $data    = date('Ymd');
 
-        $total = (int) $this->queryScalar(
-            "SELECT COUNT(*) FROM lotes WHERE produto_id = ? AND DATE(data_entrada) = CURDATE()",
+        // Conta TODOS os lotes históricos do produto, não apenas os de hoje
+        $totalHistorico = (int) $this->queryScalar(
+            "SELECT COUNT(*) FROM lotes WHERE produto_id = ?",
             [$produtoId]
         );
 
-        $numLote = str_pad((string)($total + 1), 3, '0', STR_PAD_LEFT);
+        $numLote = str_pad((string)($totalHistorico + 1), 3, '0', STR_PAD_LEFT);
         return "{$prefixo}{$seq}-{$data}-{$numLote}";
     }
 
     public function comboCount(int $id): int {
-        return (int) $this->queryScalar("SELECT COUNT(*) FROM combos WHERE lote_id = ?", [$id]);
+        return (int) $this->queryScalar(
+            "SELECT COUNT(*) FROM combos WHERE lote_id = ?", [$id]
+        );
     }
 
     public function deleteAlertas(int $id): void {
         $this->execute("DELETE FROM alertas WHERE lote_id = ?", [$id]);
+    }
+
+    public function registrarSaida(int $loteId, float $quantidade): bool {
+        return $this->execute(
+            "UPDATE lotes SET quantidade = GREATEST(0, quantidade - ?) WHERE id = ?",
+            [$quantidade, $loteId]
+        );
     }
 }

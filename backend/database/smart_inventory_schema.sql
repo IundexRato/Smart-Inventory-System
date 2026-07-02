@@ -189,7 +189,7 @@ CREATE TABLE IF NOT EXISTS itens_venda (
 CREATE TABLE IF NOT EXISTS afinidade_produtos (
     id                  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     produto_origem_id   INT UNSIGNED   NOT NULL,
-    produto_parceiro_id INT UNSIGNED   NOT NULL,
+    produto_parceiro_id INT UNSIGNED   NULL DEFAULT NULL,
     frequencia          INT UNSIGNED   NOT NULL DEFAULT 0,
     confianca           DECIMAL(5,4)   NOT NULL DEFAULT 0,
     atualizado_em       DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -207,7 +207,7 @@ CREATE TABLE IF NOT EXISTS afinidade_produtos (
 CREATE TABLE IF NOT EXISTS combos (
     id                  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     lote_id             INT UNSIGNED   NOT NULL,
-    produto_parceiro_id INT UNSIGNED   NOT NULL,
+    produto_parceiro_id INT UNSIGNED   NULL DEFAULT NULL,
     desconto_combo      DECIMAL(5,2)   NOT NULL DEFAULT 0.00,
     preco_combo         DECIMAL(10,2)  NOT NULL,
     status              ENUM('PENDENTE','APROVADO','ATIVO','ENCERRADO','REJEITADO')
@@ -218,7 +218,7 @@ CREATE TABLE IF NOT EXISTS combos (
     criado_em           DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em       DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_combo_lote     FOREIGN KEY (lote_id)             REFERENCES lotes(id)    ON DELETE CASCADE,
-    CONSTRAINT fk_combo_parceiro FOREIGN KEY (produto_parceiro_id) REFERENCES produtos(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_combo_parceiro FOREIGN KEY (produto_parceiro_id) REFERENCES produtos(id) ON DELETE SET NULL,
     INDEX idx_status     (status),
     INDEX idx_lote       (lote_id),
     INDEX idx_valido_ate (valido_ate)
@@ -327,3 +327,28 @@ SET FOREIGN_KEY_CHECKS = 1;
 --  FIM DO SCHEMA v2.0
 --  extras_migration.sql NÃO É MAIS NECESSÁRIO — tudo incorporado aqui.
 -- ============================================================
+
+
+-- ------------------------------------------------------------
+-- v3.0 — Saídas de estoque (baixas não comerciais)
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS saidas_estoque (
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    lote_id     INT UNSIGNED  NOT NULL,
+    quantidade  DECIMAL(10,3) NOT NULL,
+    motivo      ENUM('VENCIMENTO','QUEBRA','DOACAO','AJUSTE','OUTROS') NOT NULL,
+    observacao  TEXT,
+    criado_em   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_saida_lote FOREIGN KEY (lote_id)
+        REFERENCES lotes(id) ON DELETE RESTRICT,
+    INDEX idx_saida_lote   (lote_id),
+    INDEX idx_saida_motivo (motivo),
+    INDEX idx_saida_data   (criado_em)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+  COMMENT='Baixas manuais de estoque: vencimento, quebra, doação, ajuste';
+
+-- ------------------------------------------------------------
+-- v3.0 — Índice único em lotes.codigo_lote (evita duplicatas)
+-- ------------------------------------------------------------
+-- Aplicado via ensureSchema no Database.php para bancos existentes.
+-- Em bancos novos, o schema já cria com a constraint abaixo.

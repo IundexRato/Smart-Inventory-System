@@ -14,6 +14,7 @@ export function renderSidebar(activePage = '') {
         { id: 'categorias', icon: '/', label: 'Categorias',      href: pageUrl('pages/categorias.html') },
         { id: 'fornecedores',icon:'@', label: 'Fornecedores',    href: pageUrl('pages/fornecedores.html') },
         { id: 'historico',  icon: '~', label: 'Histórico',       href: pageUrl('pages/historico.html') },
+        { id: 'saidas',     icon: '↓', label: 'Saídas',          href: pageUrl('pages/saidas.html') },
         { id: 'alertas',    icon: '!', label: 'Alertas',         href: pageUrl('pages/alertas.html') },
     ];
 

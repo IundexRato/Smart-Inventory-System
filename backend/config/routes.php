@@ -11,6 +11,7 @@ use App\Controllers\AlertaController;
 use App\Controllers\DashboardController;
 use App\Controllers\CategoriaController;
 use App\Controllers\FornecedorController;
+use App\Controllers\SaidaController;
 
 return function (Router $router): void {
 
@@ -65,6 +66,14 @@ return function (Router $router): void {
     $router->get('/api/vendas/historico',     [new VendaController, 'historico']);
     $router->get('/api/vendas/resumo-mensal', [new VendaController, 'resumoMensal']);
     $router->get('/api/vendas/top-produtos',  [new VendaController, 'topProdutos']);
+
+    // ── Saídas de estoque ────────────────────────────────────
+    // POST   /api/lotes/:id/saida  — registra saída manual
+    // GET    /api/saidas           — histórico completo
+    // GET    /api/saidas/lote/:id  — saídas de um lote
+    $router->post('/api/lotes/:id/saida',    [new LoteController,  'saida']);
+    $router->get ('/api/saidas',             [new SaidaController, 'index']);
+    $router->get ('/api/saidas/lote/:id',    [new SaidaController, 'byLote']);
 
     // ── Alertas ───────────────────────────────────────────
     $router->get('/api/alertas',            [new AlertaController, 'index']);

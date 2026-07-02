@@ -1,8 +1,5 @@
 <?php
 // app/Services/AfinidadeService.php
-// Responsabilidade: calcular afinidade entre produtos e sugerir combos
-// Baseado em frequência de co-ocorrência nos últimos 90 dias
-
 namespace App\Services;
 
 use Core\Database;
@@ -20,10 +17,7 @@ class AfinidadeService {
         $this->loteModel  = new Lote();
     }
 
-    // Recalcula toda a matriz de afinidade (últimos 90 dias)
-    // Chamado pelo cron job semanal
     public function recalcularMatriz(): array {
-        // Busca todos os pares de produtos comprados juntos
         $pares = $this->db->query("
             SELECT
                 a.produto_id AS origem,
@@ -40,7 +34,6 @@ class AfinidadeService {
             ORDER BY frequencia DESC
         ")->fetchAll();
 
-        // Conta total de vendas por produto (denominador da confiança)
         $totais = $this->db->query("
             SELECT produto_id, COUNT(DISTINCT venda_id) AS total
             FROM itens_venda
@@ -54,7 +47,6 @@ class AfinidadeService {
             $totalOrigem = $totais[$par['origem']] ?? 1;
             $confianca   = round($par['frequencia'] / $totalOrigem, 4);
 
-            // Upsert na tabela de afinidade
             $this->db->prepare("
                 INSERT INTO afinidade_produtos
                     (produto_origem_id, produto_parceiro_id, frequencia, confianca)
@@ -71,9 +63,12 @@ class AfinidadeService {
         return ['pares_atualizados' => $inseridos];
     }
 
-    // Sugere o melhor parceiro de combo para um produto em risco
+    /**
+     * Sugere o melhor parceiro de combo para um produto.
+     * Versão corrigida: usa uma única query preparada.
+     */
     public function sugerirParceiro(int $produtoId): array|false {
-        return $this->db->prepare("
+        $stmt = $this->db->prepare("
             SELECT ap.produto_parceiro_id, ap.frequencia, ap.confianca,
                    p.nome, p.preco_venda, p.margem_lucro
             FROM afinidade_produtos ap
@@ -81,18 +76,11 @@ class AfinidadeService {
             WHERE ap.produto_origem_id = ?
             ORDER BY ap.confianca DESC, p.margem_lucro DESC
             LIMIT 1
-        ")->execute([$produtoId]) ? $this->db->query("
-            SELECT ap.produto_parceiro_id, ap.frequencia, ap.confianca,
-                   p.nome, p.preco_venda, p.margem_lucro
-            FROM afinidade_produtos ap
-            JOIN produtos p ON p.id = ap.produto_parceiro_id
-            WHERE ap.produto_origem_id = {$produtoId}
-            ORDER BY ap.confianca DESC, p.margem_lucro DESC
-            LIMIT 1
-        ")->fetch() : false;
+        ");
+        $stmt->execute([$produtoId]);
+        return $stmt->fetch() ?: false;
     }
 
-    // Gera combos automaticamente para todos os lotes críticos/urgentes sem combo
     public function gerarCombosAutomaticos(): array {
         $lotesSemCombo = $this->db->query("
             SELECT l.id AS lote_id, l.produto_id, l.data_validade,
@@ -109,18 +97,14 @@ class AfinidadeService {
 
         $gerados = 0;
         foreach ($lotesSemCombo as $lote) {
-            $parceiro = $this->sugerirParceiro($lote['produto_id']);
-            if (!$parceiro) continue;
-
-            $desconto   = 10.00; // desconto padrão inicial
-            $precoCombo = round(
-                ($lote['preco_venda'] + $parceiro['preco_venda']) * (1 - $desconto / 100),
-                2
-            );
+            $parceiro   = $this->sugerirParceiro($lote['produto_id']);
+            $desconto   = 10.00;
+            $precoBase  = $lote['preco_venda'] + ($parceiro ? $parceiro['preco_venda'] : 0);
+            $precoCombo = round($precoBase * (1 - $desconto / 100), 2);
 
             $this->comboModel->insert([
                 'lote_id'             => $lote['lote_id'],
-                'produto_parceiro_id' => $parceiro['produto_parceiro_id'],
+                'produto_parceiro_id' => $parceiro ? $parceiro['produto_parceiro_id'] : null,
                 'desconto_combo'      => $desconto,
                 'preco_combo'         => $precoCombo,
                 'status'              => 'PENDENTE',

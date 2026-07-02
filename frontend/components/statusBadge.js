@@ -1,6 +1,10 @@
 // frontend/components/statusBadge.js
-// Responsabilidade: funções puras de renderização de elementos reutilizáveis
-// Nenhuma função aqui faz fetch — só recebe dados e devolve HTML string
+// Responsabilidade: funções puras de renderização de elementos reutilizáveis.
+// Nenhuma função aqui faz fetch — só recebe dados e devolve HTML string.
+//
+// formatMoeda e formatData foram centralizadas em utils.js.
+// Re-exportadas aqui para compatibilidade com imports existentes.
+export { formatMoeda, formatData } from '../assets/js/utils.js';
 
 // Badge de status colorido
 export function statusBadge(status) {
@@ -40,17 +44,6 @@ export function tagEnviado(enviado) {
     return enviado
         ? `<span class="tag enviado">✓ Enviado</span>`
         : `<span class="tag pendente">⏳ Pendente</span>`;
-}
-
-// Formata moeda BRL
-export function formatMoeda(valor) {
-    return Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-// Formata data pt-BR
-export function formatData(isoDate) {
-    if (!isoDate) return '—';
-    return new Date(isoDate + 'T00:00:00').toLocaleDateString('pt-BR');
 }
 
 // Estado de loading para um container

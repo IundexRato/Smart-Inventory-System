@@ -1,11 +1,13 @@
 // frontend/assets/js/api.js
-// v2.0: adicionados endpoints de fornecedores (CRUD completo) e vendas/histórico
+// v3.0: factory de CRUD elimina repetição; saida adicionada em lotes
 
 function getApiBase() {
     if (window.location.protocol === 'file:') {
         const parts = window.location.pathname.replace(/\\/g, '/').split('/');
         const frontendIndex = parts.lastIndexOf('frontend');
-        const projectFolder = frontendIndex > 0 ? parts[frontendIndex - 1] : 'Smart-Inventory-System-main';
+        const projectFolder = frontendIndex > 0
+            ? parts[frontendIndex - 1]
+            : 'Smart-Inventory-System-main';
         return `http://localhost/${projectFolder}/backend/public`;
     }
     return new URL('../../../backend/public', import.meta.url).pathname;
@@ -44,60 +46,55 @@ function buildQs(params = {}) {
     return p.length ? '?' + new URLSearchParams(p).toString() : '';
 }
 
+/**
+ * Factory de CRUD padrão — gera list/get/create/update/delete para um recurso.
+ * Evita repetir as mesmas 5 linhas para cada entidade.
+ */
+function crud(resource) {
+    return {
+        list:   ()           => request('GET',    `/api/${resource}`),
+        get:    (id)         => request('GET',    `/api/${resource}/${id}`),
+        create: (data)       => request('POST',   `/api/${resource}`, data),
+        update: (id, data)   => request('PUT',    `/api/${resource}/${id}`, data),
+        delete: (id)         => request('DELETE', `/api/${resource}/${id}`),
+    };
+}
+
 const api = {
     dashboard: {
         get: () => request('GET', '/api/dashboard'),
     },
 
     lotes: {
-        list: (status = '') => request('GET', `/api/lotes${status ? '?status=' + encodeURIComponent(status) : ''}`),
-        get:    (id)         => request('GET', `/api/lotes/${id}`),
-        create: (data)       => request('POST', '/api/lotes', data),
-        update: (id, data)   => request('PUT', `/api/lotes/${id}`, data),
-        delete: (id)         => request('DELETE', `/api/lotes/${id}`),
+        ...crud('lotes'),
+        // Sobrescreve list para aceitar filtro de status
+        list:  (status = '') => request('GET', `/api/lotes${status ? '?status=' + encodeURIComponent(status) : ''}`),
+        saida: (id, data)    => request('POST', `/api/lotes/${id}/saida`, data),
     },
 
     combos: {
-        list: (status = '') => request('GET', `/api/combos${status ? '?status=' + encodeURIComponent(status) : ''}`),
-        get:    (id)         => request('GET', `/api/combos/${id}`),
-        create: (data)       => request('POST', '/api/combos', data),
-        update: (id, data)   => request('PUT', `/api/combos/${id}`, data),
-        aprovar:(id, aprovadoPor) => request('PUT', `/api/combos/${id}/aprovar`, { aprovado_por: aprovadoPor }),
-        delete: (id)         => request('DELETE', `/api/combos/${id}`),
+        ...crud('combos'),
+        list:   (status = '') => request('GET', `/api/combos${status ? '?status=' + encodeURIComponent(status) : ''}`),
+        aprovar: (id, aprovadoPor) => request('PUT', `/api/combos/${id}/aprovar`, { aprovado_por: aprovadoPor }),
     },
 
-    produtos: {
-        list: ()             => request('GET', '/api/produtos'),
-        get:  (id)           => request('GET', `/api/produtos/${id}`),
-        create: (data)       => request('POST', '/api/produtos', data),
-        update: (id, data)   => request('PUT', `/api/produtos/${id}`, data),
-        delete: (id)         => request('DELETE', `/api/produtos/${id}`),
-    },
-
-    categorias: {
-        list: ()             => request('GET', '/api/categorias'),
-        get:  (id)           => request('GET', `/api/categorias/${id}`),
-        create: (data)       => request('POST', '/api/categorias', data),
-        update: (id, data)   => request('PUT', `/api/categorias/${id}`, data),
-        delete: (id)         => request('DELETE', `/api/categorias/${id}`),
-    },
+    produtos:    crud('produtos'),
+    categorias:  crud('categorias'),
 
     fornecedores: {
+        ...crud('fornecedores'),
         list: (ativo = null) => request('GET', `/api/fornecedores${ativo !== null ? '?ativo=' + ativo : ''}`),
-        get:  (id)           => request('GET', `/api/fornecedores/${id}`),
-        create: (data)       => request('POST', '/api/fornecedores', data),
-        update: (id, data)   => request('PUT', `/api/fornecedores/${id}`, data),
-        delete: (id)         => request('DELETE', `/api/fornecedores/${id}`),
+    },
+
+    saidas: {
+        list:    ()   => request('GET', '/api/saidas'),
+        byLote:  (id) => request('GET', `/api/saidas/lote/${id}`),
     },
 
     vendas: {
-        /**
-         * Histórico de vendas — todos os params são opcionais
-         * @param {object} filtros { data_ini, data_fim, mes, ano, produto_id, order }
-         */
-        historico: (filtros = {}) => request('GET', `/api/vendas/historico${buildQs(filtros)}`),
-        resumoMensal: (meses = 12) => request('GET', `/api/vendas/resumo-mensal?meses=${meses}`),
-        topProdutos: (params = {}) => request('GET', `/api/vendas/top-produtos${buildQs(params)}`),
+        historico:    (filtros = {}) => request('GET', `/api/vendas/historico${buildQs(filtros)}`),
+        resumoMensal: (meses = 12)   => request('GET', `/api/vendas/resumo-mensal?meses=${meses}`),
+        topProdutos:  (params = {})  => request('GET', `/api/vendas/top-produtos${buildQs(params)}`),
     },
 
     alertas: {

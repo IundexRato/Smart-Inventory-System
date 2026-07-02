@@ -41,14 +41,14 @@ async function loadRefs() {
     [lotes, produtos] = await Promise.all([api.lotes.list(), api.produtos.list()]);
 
     // Searchable select para lote
-    ssLote = createSearchableSelect('lote_id', 'Buscar lote por produto ou código...');
+    ssLote = createSearchableSelect('lote_id', 'Buscar lote por produto ou código');
     ssLote.setOptions(lotes.map(l => ({
         value: l.id,
         label: `${l.codigo_lote} — ${l.produto_nome} (${l.sku})`,
     })));
 
     // Searchable select para produto parceiro (opcional)
-    ssParceiro = createSearchableSelect('produto_parceiro_id', 'Buscar por nome ou SKU (opcional)...');
+    ssParceiro = createSearchableSelect('produto_parceiro_id', 'Buscar por nome ou SKU');
     ssParceiro.setOptions(produtos.map(p => ({
         value: p.id,
         label: `${p.nome} (${p.sku})`,
